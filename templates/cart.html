@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block title %}Giỏ hàng — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal" style="max-width:640px;">
+    <h2>Giỏ hàng của bạn</h2>
+
+    <div class="ms-cart-item">
+      <img src="{{ url_for('static', filename='images/product-item2.jpg') }}" alt="">
+      <div class="ms-ci-info">
+        <b>Smart Watch Pro</b>
+        <span style="font-size:.85rem;color:var(--ms-muted);">Số lượng: 1</span>
+      </div>
+      <div class="ms-ci-price">$129.00</div>
+    </div>
+    <div class="ms-cart-item">
+      <img src="{{ url_for('static', filename='images/product-item1.jpg') }}" alt="">
+      <div class="ms-ci-info">
+        <b>Wireless Headphones</b>
+        <span style="font-size:.85rem;color:var(--ms-muted);">Số lượng: 1</span>
+      </div>
+      <div class="ms-ci-price">$59.99</div>
+    </div>
+    <div class="ms-cart-item">
+      <img src="{{ url_for('static', filename='images/product-item9.jpg') }}" alt="">
+      <div class="ms-ci-info">
+        <b>Yoga Mat Premium</b>
+        <span style="font-size:.85rem;color:var(--ms-muted);">Số lượng: 1</span>
+      </div>
+      <div class="ms-ci-price">$32.00</div>
+    </div>
+
+    <div class="ms-promo">
+      <input id="ms-promo-code" placeholder="Nhập mã giảm giá (vd: WELCOME10)">
+      <button class="ms-btn" type="button" id="ms-promo-btn">Áp dụng</button>
+    </div>
+    <div id="ms-promo-msg" style="font-size:.85rem;margin-bottom:14px;"></div>
+
+    <div style="display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;border-top:1px solid var(--ms-border);padding-top:14px;">
+      <span>Tổng cộng</span>
+      <span id="ms-cart-total">$220.99</span>
+    </div>
+
+    <button class="ms-btn ms-btn-accent" style="width:100%;margin-top:16px;" type="button" onclick="alert('Đây là giỏ hàng demo trong CTF Lab — không có chức năng thanh toán thật.')">
+      Tiến hành thanh toán
+    </button>
+  </div>
+</div>
+
+<script>
+  // Đây là demo thuần túy phía client — không gọi về server, không ảnh
+  // hưởng gì đến dữ liệu/CSDL của ứng dụng.
+  (function () {
+    var KNOWN_CODES = { "WELCOME10": 0.1, "MINISTORE5": 0.05 };
+    var BASE_TOTAL = 220.99;
+    document.getElementById("ms-promo-btn").addEventListener("click", function () {
+      var code = document.getElementById("ms-promo-code").value.trim().toUpperCase();
+      var msg = document.getElementById("ms-promo-msg");
+      var totalEl = document.getElementById("ms-cart-total");
+      if (KNOWN_CODES[code]) {
+        var newTotal = (BASE_TOTAL * (1 - KNOWN_CODES[code])).toFixed(2);
+        totalEl.textContent = "$" + newTotal;
+        msg.style.color = "#2e8b57";
+        msg.textContent = "Đã áp dụng mã giảm giá " + (KNOWN_CODES[code] * 100) + "%.";
+      } else {
+        totalEl.textContent = "$" + BASE_TOTAL.toFixed(2);
+        msg.style.color = "#c0392b";
+        msg.textContent = "Mã giảm giá không hợp lệ.";
+      }
+    });
+  })();
+</script>
+{% endblock %}

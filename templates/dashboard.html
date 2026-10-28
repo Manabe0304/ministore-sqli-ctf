@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Bảng điều khiển — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal">
+    <h2>Bảng điều khiển</h2>
+    <p>Đăng nhập với tài khoản: <b>{{ user }}</b> (vai trò: <b>{{ role }}</b>)</p>
+    {% if role == 'admin' %}
+      <div class="ms-alert ms-alert-ok">
+        Bạn đang đăng nhập với quyền <b>ADMIN</b>.<br>
+        {% if flag %}Flag: <span class="ms-code">{{ flag }}</span>{% endif %}
+      </div>
+    {% else %}
+      <div class="ms-alert ms-alert-info">Đây là tài khoản khách hàng thông thường.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

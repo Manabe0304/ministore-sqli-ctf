@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Chi tiết sản phẩm — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-breadcrumb"><a href="{{ url_for('index') }}">Trang chủ</a> / Sản phẩm</div>
+
+  <div class="ms-panel ms-reveal" style="max-width:900px;">
+    <h2>Chi tiết sản phẩm</h2>
+
+    <form method="get" action="{{ url_for('products') }}">
+      <div class="ms-searchbox">
+        <input name="id" value="{{ pid or '' }}" placeholder="Nhập mã sản phẩm, ví dụ: 1">
+        <button class="ms-btn" type="submit">
+          <span class="ms-spinner"></span>
+          <img class="ms-search-icon" src="{{ url_for('static', filename='images/search-icon.png') }}" alt="">
+          Tìm kiếm
+        </button>
+      </div>
+    </form>
+
+    {% if rows %}
+    <table class="ms-table ms-reveal">
+      <tr><th>ID</th><th>Tên</th><th>Danh mục</th><th>Giá</th><th>Mô tả</th></tr>
+      {% for r in rows %}
+      <tr>
+        <td>{{ r['id'] }}</td>
+        <td>{{ r['name'] }}</td>
+        <td>{{ r['category'] }}</td>
+        <td>{{ r['price'] }}</td>
+        <td>{{ r['description'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% elif pid is not none %}
+    <div class="ms-alert ms-alert-info">Không tìm thấy sản phẩm phù hợp.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

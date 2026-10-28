@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Liên hệ — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal" style="max-width:520px;">
+    <h2>Liên hệ với chúng tôi</h2>
+    <p style="color:var(--ms-muted);font-size:.9rem;">
+      Có thắc mắc về đơn hàng hoặc sản phẩm? Gửi tin nhắn cho đội ngũ
+      MiniStore, chúng tôi sẽ phản hồi trong vòng 24 giờ.
+    </p>
+
+    {% if sent %}
+      <div class="ms-alert ms-alert-ok">Cảm ơn bạn! Tin nhắn đã được gửi đi.</div>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('contact') }}">
+      <div class="ms-field">
+        <label>Họ tên</label>
+        <input name="name" autocomplete="off">
+      </div>
+      <div class="ms-field">
+        <label>Email</label>
+        <input name="email" type="email" autocomplete="off">
+      </div>
+      <div class="ms-field">
+        <label>Nội dung</label>
+        <textarea name="message" rows="4"></textarea>
+      </div>
+      <button class="ms-btn" type="submit" style="width:100%;">
+        <span class="ms-spinner"></span>Gửi tin nhắn
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

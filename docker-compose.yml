@@ -1,0 +1,22 @@
+# Chay MiniStore SQLi CTF chi bang 1 lenh:
+#     docker compose up --build
+# Mo trinh duyet tai: http://127.0.0.1:8080
+#
+# Cac rang buoc read_only / tmpfs / user "1000" o day MO PHONG DUNG moi
+# truong F-CTF that (xem Dockerfile va HUONG_DAN_VIET.dotx) — neu chay
+# "docker run" tay, nho truyen du cac co nay (--read-only --tmpfs /tmp
+# --user 1000), docker-compose giup ban khong phai nho/go lai moi lan.
+services:
+  web:
+    build: .
+    container_name: ministore-sqli-ctf
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_PATH=/tmp/store.db
+      - PORT=8080
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "1000"
+    restart: unless-stopped

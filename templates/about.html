@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Giới thiệu — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal" style="max-width:820px;">
+    <h2>Về MiniStore</h2>
+    <p>
+      MiniStore là cửa hàng trực tuyến chuyên cung cấp phụ kiện, thiết bị
+      điện tử và vật dụng gia đình với giá hợp lý. Chúng tôi bắt đầu từ
+      một cửa hàng nhỏ năm 2024 và hiện phục vụ hàng nghìn khách hàng mỗi
+      tháng trên toàn quốc.
+    </p>
+    <p>
+      Mọi sản phẩm trên MiniStore đều được chọn lọc kỹ lưỡng, có chính
+      sách đổi trả rõ ràng và đội ngũ chăm sóc khách hàng sẵn sàng hỗ trợ
+      24/7.
+    </p>
+
+    <div class="ms-feature-grid">
+      <div class="ms-feature ms-reveal">
+        <div class="ms-feature-icon">🚚</div>
+        <b>Giao hàng nhanh</b>
+        <p style="font-size:.85rem;color:var(--ms-muted);">Toàn quốc trong 2-4 ngày làm việc.</p>
+      </div>
+      <div class="ms-feature ms-reveal" style="transition-delay:.08s">
+        <div class="ms-feature-icon">🔒</div>
+        <b>Thanh toán an toàn</b>
+        <p style="font-size:.85rem;color:var(--ms-muted);">Mã hóa thông tin giao dịch.</p>
+      </div>
+      <div class="ms-feature ms-reveal" style="transition-delay:.16s">
+        <div class="ms-feature-icon">↩️</div>
+        <b>Đổi trả dễ dàng</b>
+        <p style="font-size:.85rem;color:var(--ms-muted);">Trong vòng 7 ngày, miễn phí.</p>
+      </div>
+      <div class="ms-feature ms-reveal" style="transition-delay:.24s">
+        <div class="ms-feature-icon">💬</div>
+        <b>Hỗ trợ 24/7</b>
+        <p style="font-size:.85rem;color:var(--ms-muted);">Hotline và chat trực tuyến.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Đăng ký tài khoản — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal" style="max-width:460px;">
+    <h2>Đăng ký tài khoản thành viên</h2>
+    <form method="post" action="{{ url_for('register') }}" id="ms-register-form">
+      <div class="ms-field">
+        <label>Tên đăng nhập</label>
+        <input name="username" id="ms-reg-username" autocomplete="off" required>
+        <div id="ms-reg-check-msg" style="font-size:.82rem;margin-top:6px;"></div>
+      </div>
+      <div class="ms-field">
+        <label>Họ tên</label>
+        <input name="full_name" autocomplete="off">
+      </div>
+      <div class="ms-field">
+        <label>Email</label>
+        <input name="email" type="email" autocomplete="off">
+      </div>
+      <div class="ms-field">
+        <label>Mật khẩu</label>
+        <input name="password" type="password" autocomplete="off" required>
+      </div>
+      <button class="ms-btn" type="submit" style="width:100%;">
+        <span class="ms-spinner"></span>Đăng ký
+      </button>
+    </form>
+
+    {% if message %}
+      <div class="ms-alert {% if status == 'ok' %}ms-alert-ok{% else %}ms-alert-danger{% endif %}">
+        {{ message }}
+      </div>
+    {% endif %}
+
+    <p style="margin-top:14px;font-size:.88rem;">
+      Đã có tài khoản? <a href="{{ url_for('login') }}">Đăng nhập</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  // Tiện ích nhỏ: gọi lại tính năng "Kiểm tra tài khoản" (/check) để báo
+  // người dùng biết tên đăng nhập đã tồn tại hay chưa trước khi submit.
+  (function () {
+    var input = document.getElementById("ms-reg-username");
+    var msg = document.getElementById("ms-reg-check-msg");
+    var timer = null;
+    if (!input) return;
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+      var val = input.value.trim();
+      if (!val) { msg.textContent = ""; return; }
+      timer = setTimeout(function () {
+        fetch("{{ url_for('check') }}?username=" + encodeURIComponent(val))
+          .then(function (r) { return r.text(); })
+          .then(function (html) {
+            if (html.indexOf("đã tồn tại trong hệ thống") !== -1) {
+              msg.textContent = "Tên đăng nhập này đã được sử dụng.";
+              msg.style.color = "#c0392b";
+            } else {
+              msg.textContent = "Tên đăng nhập còn trống.";
+              msg.style.color = "#2e8b57";
+            }
+          })
+          .catch(function () { msg.textContent = ""; });
+      }, 400);
+    });
+  })();
+</script>
+{% endblock %}

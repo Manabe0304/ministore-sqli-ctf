@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# DB sinh ra boi init_db.py (chay lai se tao moi)
+*.db
+
+# Secrets / moi truong
+.env
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

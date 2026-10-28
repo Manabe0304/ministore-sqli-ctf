@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Đăng nhập — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal" style="max-width:420px;">
+    <h2>Đăng nhập</h2>
+    <form method="post" action="{{ url_for('login') }}">
+      <div class="ms-field">
+        <label>Tên đăng nhập</label>
+        <input name="username" autocomplete="off">
+      </div>
+      <div class="ms-field">
+        <label>Mật khẩu</label>
+        <input name="password" type="text" autocomplete="off">
+      </div>
+      <button class="ms-btn" type="submit" style="width:100%;">
+        <span class="ms-spinner"></span>Đăng nhập
+      </button>
+    </form>
+    {% if message %}<div class="ms-alert ms-alert-danger">{{ message }}</div>{% endif %}
+  </div>
+</div>
+{% endblock %}

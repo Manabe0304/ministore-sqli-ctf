@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MiniStore{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="ms-topbar">Miễn phí vận chuyển cho đơn hàng từ 500.000đ &middot; Hotline 1900-1234</div>
+
+  <header class="ms-header">
+    <div class="container">
+      <a href="{{ url_for('index') }}" class="ms-logo">
+        <img src="{{ url_for('static', filename='images/main-logo.png') }}" alt="MiniStore">
+      </a>
+      <nav class="ms-nav">
+        <a href="{{ url_for('index') }}">Trang chủ</a>
+        <a href="{{ url_for('about') }}">Giới thiệu</a>
+        <a href="{{ url_for('contact') }}">Liên hệ</a>
+        <a href="{{ url_for('check') }}">Kiểm tra tài khoản</a>
+      </nav>
+      <div class="ms-actions">
+        <a href="{{ url_for('cart') }}">Giỏ hàng<span class="ms-badge">3</span></a>
+        {% if user %}
+          <a href="{{ url_for('dashboard') }}">Xin chào, {{ user }}</a>
+          <a href="{{ url_for('logout') }}">Đăng xuất</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">Đăng nhập</a>
+          <a href="{{ url_for('register') }}">Đăng ký</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <main>
+    {% block body %}{% endblock %}
+  </main>
+
+  <footer class="ms-footer">
+    <div class="container">
+      <div>&copy; 2024 MiniStore Demo Shop &mdash; CTF Lab giáo dục.</div>
+      <div>
+        <a href="{{ url_for('about') }}">Giới thiệu</a> &middot;
+        <a href="{{ url_for('contact') }}">Liên hệ</a> &middot;
+        <a href="{{ url_for('login') }}">Đăng nhập</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- changelog nội bộ: v1.3 đã vô hiệu hóa /export-db sau audit bảo mật -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+/* ==========================================================
+   MiniStore Shop — giao dien cua hang (CTF Lab SQL Injection)
+   Phien ban 2: UI lam moi + hieu ung chuyen dong.
+   ========================================================== */
+:root{
+  --ms-primary:#243447;
+  --ms-primary-2:#33496337;
+  --ms-accent:#e8a33d;
+  --ms-accent-dark:#c9862a;
+  --ms-bg:#f5f6fa;
+  --ms-card:#ffffff;
+  --ms-text:#242933;
+  --ms-muted:#8a8f98;
+  --ms-border:#e8e9f0;
+  --ms-danger:#c0392b;
+  --ms-success:#2e8b57;
+  --ms-shadow:0 10px 28px rgba(26,35,50,.08);
+  --ms-shadow-lg:0 18px 40px rgba(26,35,50,.16);
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;height:100%;}
+body{
+  font-family:'Jost',Arial,sans-serif;
+  background:var(--ms-bg);
+  color:var(--ms-text);
+  margin:0;
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  opacity:0;
+  transform:translateY(8px);
+  transition:opacity .5s ease, transform .5s ease;
+}
+body.ms-loaded{opacity:1;transform:translateY(0);}
+/* Sticky footer: main chiem het khong gian con lai, footer luon nam duoi cung */
+main{flex:1 0 auto;}
+.ms-footer{flex-shrink:0;}
+a{color:var(--ms-primary);text-decoration:none;transition:color .15s ease;}
+a:hover{color:var(--ms-accent-dark);}
+
+/* ---------- Topbar ---------- */
+.ms-topbar{
+  background:var(--ms-primary);
+  color:#fff;
+  font-size:.8rem;
+  padding:7px 0;
+  text-align:center;
+  letter-spacing:.04em;
+  position:relative;
+  overflow:hidden;
+}
+.ms-topbar::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);
+  animation:ms-shimmer 5s linear infinite;
+}
+@keyframes ms-shimmer{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+
+/* ---------- Header ---------- */
+.ms-header{
+  background:#fff;
+  border-bottom:1px solid var(--ms-border);
+  padding:14px 0;
+  position:sticky;
+  top:0;
+  z-index:50;
+  transition:box-shadow .25s ease, padding .25s ease;
+}
+.ms-header.ms-scrolled{
+  box-shadow:0 6px 20px rgba(26,35,50,.08);
+  padding:9px 0;
+}
+.ms-header .container{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+}
+.ms-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:1.4rem;
+  font-weight:700;
+  color:var(--ms-primary);
+}
+.ms-logo img{height:32px;transition:transform .2s ease;}
+.ms-logo:hover img{transform:rotate(-6deg) scale(1.05);}
+.ms-nav{display:flex;gap:22px;flex-wrap:wrap;font-size:.95rem;font-weight:500;}
+.ms-nav a{
+  position:relative;color:var(--ms-text);padding:4px 1px;
+}
+.ms-nav a::after{
+  content:"";position:absolute;left:0;bottom:-2px;width:0;height:2px;
+  background:var(--ms-accent);transition:width .2s ease;
+}
+.ms-nav a:hover{color:var(--ms-primary);}
+.ms-nav a:hover::after,.ms-nav a.active::after{width:100%;}
+.ms-actions{display:flex;gap:16px;align-items:center;font-size:.9rem;}
+.ms-actions a{color:var(--ms-primary);font-weight:600;}
+
+/* ---------- Hero ---------- */
+.ms-hero{
+  position:relative;
+  color:#fff;
+  padding:64px 0 72px;
+  margin-bottom:34px;
+  overflow:hidden;
+  background:
+    linear-gradient(120deg, rgba(20,28,40,.88) 10%, rgba(36,52,71,.78) 60%, rgba(201,134,42,.55) 130%),
+    url('../images/banner-image.png') center/cover no-repeat;
+}
+.ms-hero .container{position:relative;z-index:2;}
+.ms-hero h1{
+  font-size:2.3rem;font-weight:700;margin:0 0 10px;
+  animation:ms-fade-up .7s ease both;
+}
+.ms-hero p{
+  color:#e4e9f0;max-width:620px;margin:0 0 20px;font-size:1.02rem;
+  animation:ms-fade-up .7s ease .1s both;
+}
+.ms-hero .ms-btn{animation:ms-fade-up .7s ease .2s both;}
+@keyframes ms-fade-up{
+  from{opacity:0;transform:translateY(18px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ---------- Scroll-reveal ---------- */
+.ms-reveal{
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity .55s ease, transform .55s ease;
+}
+.ms-reveal.ms-in-view{opacity:1;transform:translateY(0);}
+
+/* ---------- Sections / Grid ---------- */
+.ms-section-title{
+  font-size:1.35rem;font-weight:700;margin:30px 0 18px;
+  display:flex;align-items:center;gap:10px;
+}
+.ms-section-title::before{
+  content:"";width:5px;height:22px;background:var(--ms-accent);border-radius:3px;display:inline-block;
+}
+.ms-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(215px,1fr));
+  gap:22px;
+}
+.ms-card{
+  background:var(--ms-card);
+  border:1px solid var(--ms-border);
+  border-radius:14px;
+  overflow:hidden;
+  transition:box-shadow .25s ease, transform .25s ease, border-color .25s ease;
+}
+.ms-card:hover{
+  box-shadow:var(--ms-shadow-lg);
+  transform:translateY(-5px);
+  border-color:transparent;
+}
+.ms-card .ms-card-img{overflow:hidden;background:#eee;}
+.ms-card img{
+  width:100%;height:175px;object-fit:cover;display:block;
+  transition:transform .4s ease;
+}
+.ms-card:hover img{transform:scale(1.08);}
+.ms-card-body{padding:13px 15px;}
+.ms-card-cat{font-size:.72rem;color:var(--ms-accent-dark);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.ms-card-title{font-size:1rem;font-weight:600;margin:5px 0;color:var(--ms-text);}
+.ms-card-price{color:var(--ms-primary);font-weight:700;}
+
+/* ---------- Generic content panel ---------- */
+.ms-panel{
+  background:var(--ms-card);
+  border:1px solid var(--ms-border);
+  border-radius:14px;
+  padding:28px;
+  max-width:720px;
+  margin:0 auto 24px;
+  box-shadow:var(--ms-shadow);
+}
+.ms-panel h2{margin-top:0;font-size:1.45rem;}
+.ms-breadcrumb{font-size:.82rem;color:var(--ms-muted);margin-bottom:14px;}
+.ms-breadcrumb a{color:var(--ms-muted);}
+
+/* ---------- Search box (trang chi tiet san pham) ---------- */
+.ms-searchbox{
+  display:flex;align-items:stretch;gap:0;
+  border:1px solid var(--ms-border);
+  border-radius:10px;overflow:hidden;
+  box-shadow:0 2px 8px rgba(26,35,50,.04);
+  transition:box-shadow .2s ease, border-color .2s ease;
+  margin-bottom:6px;
+}
+.ms-searchbox:focus-within{
+  border-color:var(--ms-accent);
+  box-shadow:0 0 0 3px rgba(232,163,61,.18);
+}
+.ms-searchbox input{
+  flex:1;border:none;padding:13px 16px;font-size:.98rem;font-family:inherit;
+  background:#fcfcfe;outline:none;
+}
+.ms-searchbox button{
+  border:none;background:var(--ms-primary);color:#fff;padding:0 22px;
+  font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;
+  transition:background .2s ease;
+}
+.ms-searchbox button:hover{background:#1a2634;}
+.ms-searchbox .ms-search-icon{width:16px;height:16px;filter:invert(1);opacity:.9;}
+
+/* ---------- Forms ---------- */
+.ms-field{margin-bottom:16px;}
+.ms-field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:6px;color:var(--ms-text);}
+.ms-field input, .ms-field select, .ms-field textarea{
+  width:100%;padding:11px 13px;border:1px solid var(--ms-border);
+  border-radius:8px;font-size:.95rem;font-family:inherit;background:#fcfcfe;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.ms-field input:focus, .ms-field textarea:focus{
+  outline:none;border-color:var(--ms-accent);box-shadow:0 0 0 3px rgba(232,163,61,.18);
+}
+.ms-btn{
+  position:relative;overflow:hidden;
+  display:inline-block;background:var(--ms-primary);color:#fff;border:none;
+  padding:11px 24px;border-radius:8px;font-weight:600;cursor:pointer;font-size:.93rem;
+  transition:background .2s ease, transform .12s ease;
+}
+.ms-btn:hover{background:#1a2634;color:#fff;transform:translateY(-1px);}
+.ms-btn:active{transform:translateY(0);}
+.ms-btn-accent{background:var(--ms-accent);color:#2d2d2d;}
+.ms-btn-accent:hover{background:var(--ms-accent-dark);color:#fff;}
+.ms-ripple{
+  position:absolute;border-radius:50%;background:rgba(255,255,255,.55);
+  transform:scale(0);animation:ms-ripple .55s ease-out;pointer-events:none;
+}
+@keyframes ms-ripple{to{transform:scale(2.6);opacity:0;}}
+
+/* ---------- Alerts / status ---------- */
+.ms-alert{
+  padding:11px 15px;border-radius:8px;font-size:.9rem;margin:14px 0;
+  animation:ms-alert-in .3s ease both;
+  border-left:4px solid transparent;
+}
+@keyframes ms-alert-in{
+  from{opacity:0;transform:translateY(-6px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.ms-alert-info{background:#eaf2fb;color:#1f4e79;border-left-color:#5b9bd5;}
+.ms-alert-ok{background:#e8f6ee;color:var(--ms-success);border-left-color:var(--ms-success);}
+.ms-alert-danger{background:#fbeae7;color:var(--ms-danger);border-left-color:var(--ms-danger);}
+.ms-code{background:#eef0f4;padding:2px 6px;border-radius:4px;font-family:Consolas,Menlo,monospace;font-size:.88em;}
+
+/* ---------- Table ---------- */
+.ms-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.92rem;}
+.ms-table th,.ms-table td{padding:9px 11px;border-bottom:1px solid var(--ms-border);text-align:left;}
+.ms-table th{color:var(--ms-muted);font-weight:600;font-size:.78rem;text-transform:uppercase;}
+.ms-table tr{transition:background .15s ease;}
+.ms-table tbody tr:hover{background:#f7f8fb;}
+
+/* ---------- Spinner (loading khi submit form) ---------- */
+.ms-spinner{
+  display:inline-block;width:14px;height:14px;border-radius:50%;
+  border:2px solid rgba(255,255,255,.4);border-top-color:#fff;
+  animation:ms-spin .6s linear infinite;margin-right:8px;vertical-align:-2px;
+  display:none;
+}
+.ms-btn.ms-loading .ms-spinner{display:inline-block;}
+@keyframes ms-spin{to{transform:rotate(360deg);}}
+
+/* ---------- Footer ---------- */
+.ms-footer{
+  margin-top:48px;background:var(--ms-primary);color:#c7d0da;padding:28px 0;font-size:.85rem;
+}
+.ms-footer a{color:#fff;}
+.ms-footer .container{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+
+/* ---------- Thanh loc / tim kiem tren trang chu (xem index.html) ---------- */
+.ms-filterbar{
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+  background:var(--ms-card);border:1px solid var(--ms-border);border-radius:12px;
+  padding:14px 16px;margin-bottom:22px;box-shadow:var(--ms-shadow);
+}
+.ms-filterbar input[type="text"]{
+  flex:1;min-width:160px;padding:9px 12px;border:1px solid var(--ms-border);
+  border-radius:7px;font-family:inherit;font-size:.9rem;background:#fcfcfe;
+}
+.ms-filterbar select{
+  padding:9px 10px;border:1px solid var(--ms-border);border-radius:7px;
+  font-family:inherit;font-size:.9rem;background:#fcfcfe;
+}
+.ms-pillgroup{display:flex;gap:8px;flex-wrap:wrap;}
+.ms-pill{
+  padding:6px 14px;border-radius:999px;border:1px solid var(--ms-border);
+  font-size:.82rem;font-weight:500;color:var(--ms-text);background:#fff;
+  transition:all .15s ease;
+}
+.ms-pill:hover{border-color:var(--ms-accent);color:var(--ms-accent-dark);}
+.ms-pill.active{background:var(--ms-primary);border-color:var(--ms-primary);color:#fff;}
+
+/* ---------- Badge (gio hang) ---------- */
+.ms-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:18px;height:18px;padding:0 4px;border-radius:999px;
+  background:var(--ms-accent);color:#2d2d2d;font-size:.68rem;font-weight:700;
+  margin-left:4px;
+}
+
+/* ---------- Gio hang (demo) ---------- */
+.ms-cart-item{
+  display:flex;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--ms-border);
+}
+.ms-cart-item img{width:64px;height:64px;object-fit:cover;border-radius:8px;}
+.ms-cart-item .ms-ci-info{flex:1;}
+.ms-cart-item .ms-ci-info b{display:block;font-size:.95rem;}
+.ms-cart-item .ms-ci-price{color:var(--ms-primary);font-weight:700;}
+.ms-promo{display:flex;gap:10px;margin:16px 0;}
+.ms-promo input{flex:1;}
+
+/* ---------- Trang gioi thieu / lien he: khoi tinh nang ---------- */
+.ms-feature-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:20px 0;
+}
+.ms-feature{
+  background:var(--ms-card);border:1px solid var(--ms-border);border-radius:12px;
+  padding:18px;text-align:center;transition:transform .2s ease, box-shadow .2s ease;
+}
+.ms-feature:hover{transform:translateY(-4px);box-shadow:var(--ms-shadow);}
+.ms-feature .ms-feature-icon{font-size:1.8rem;margin-bottom:8px;}
+
+.container{max-width:1100px;margin:0 auto;padding:0 18px;}
+
+@media (max-width:640px){
+  .ms-hero{padding:42px 0 50px;}
+  .ms-hero h1{font-size:1.7rem;}
+  .ms-searchbox{flex-direction:column;border-radius:10px;}
+  .ms-searchbox button{padding:12px;justify-content:center;}
+}

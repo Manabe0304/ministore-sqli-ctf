@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}MiniStore — Cửa hàng trực tuyến{% endblock %}
+{% block body %}
+<section class="ms-hero">
+  <div class="container">
+    <h1>Chào mừng đến với MiniStore</h1>
+    <p>Phụ kiện, đồ điện tử và vật dụng gia đình chất lượng — giá tốt mỗi ngày.</p>
+    <a href="#ms-products" class="ms-btn ms-btn-accent"><span class="ms-spinner"></span>Khám phá ngay</a>
+  </div>
+</section>
+
+<div class="container" id="ms-products">
+  <h2 class="ms-section-title">Sản phẩm nổi bật</h2>
+
+  <form method="get" action="{{ url_for('index') }}" class="ms-filterbar">
+    <input type="text" name="q" value="{{ q or '' }}" placeholder="Tìm sản phẩm theo tên...">
+    <select name="sort" onchange="this.form.submit()">
+      {% for key, opt in sort_options.items() %}
+      <option value="{{ key }}" {% if key == sort %}selected{% endif %}>{{ opt[0] }}</option>
+      {% endfor %}
+    </select>
+    <button class="ms-btn" type="submit"><span class="ms-spinner"></span>Lọc</button>
+  </form>
+
+  <div class="ms-pillgroup" style="margin-bottom:20px;">
+    <a class="ms-pill {% if not category %}active{% endif %}"
+       href="{{ url_for('index', q=q, sort=sort) }}">Tất cả</a>
+    {% for c in categories %}
+    <a class="ms-pill {% if category == c %}active{% endif %}"
+       href="{{ url_for('index', q=q, sort=sort, category=c) }}">{{ c }}</a>
+    {% endfor %}
+  </div>
+
+  <div class="ms-grid">
+    {% for p in products %}
+    <a class="ms-card ms-reveal" style="transition-delay:{{ (loop.index0 % 5) * 0.06 }}s" href="{{ url_for('products', id=p['id']) }}">
+      <div class="ms-card-img">
+        <img src="{{ url_for('static', filename='images/' ~ p['image']) }}" alt="{{ p['name'] }}">
+      </div>
+      <div class="ms-card-body">
+        <div class="ms-card-cat">{{ p['category'] }}</div>
+        <div class="ms-card-title">{{ p['name'] }}</div>
+        <div class="ms-card-price">${{ "%.2f"|format(p['price']) }}</div>
+      </div>
+    </a>
+    {% else %}
+    <p>Không tìm thấy sản phẩm phù hợp.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

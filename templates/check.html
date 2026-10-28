@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Kiểm tra tài khoản — MiniStore{% endblock %}
+{% block body %}
+<div class="container">
+  <div class="ms-panel ms-reveal">
+    <h2>Kiểm tra tài khoản thành viên</h2>
+    <p>Điền tên đăng nhập để kiểm tra xem tài khoản đã tồn tại trong hệ thống hay chưa.</p>
+    <form method="get" action="{{ url_for('check') }}">
+      <div class="ms-searchbox">
+        <input name="username" value="{{ username or '' }}" placeholder="Nhập tên đăng nhập...">
+        <button class="ms-btn" type="submit">
+          <span class="ms-spinner"></span>
+          <img class="ms-search-icon" src="{{ url_for('static', filename='images/search-icon.png') }}" alt="">
+          Kiểm tra
+        </button>
+      </div>
+    </form>
+    {% if result %}
+      {% if result == 'TAKEN' %}
+        <div class="ms-alert ms-alert-danger">Tài khoản <b>{{ username }}</b> đã tồn tại trong hệ thống.</div>
+      {% else %}
+        <div class="ms-alert ms-alert-ok">Không tìm thấy tài khoản <b>{{ username }}</b> trong hệ thống.</div>
+      {% endif %}
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
