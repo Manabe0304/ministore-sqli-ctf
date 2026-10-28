@@ -23,7 +23,7 @@ def init():
         CREATE TABLE users (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             username    TEXT NOT NULL,
-            password    TEXT NOT NULL,          -- plaintext co y, de minh hoa
+            password    TEXT NOT NULL,
             role        TEXT NOT NULL DEFAULT 'customer',
             email       TEXT,
             full_name   TEXT
@@ -41,7 +41,7 @@ def init():
         -- Flags cua tung ky thuat khai thac (muc tieu CTF)
         CREATE TABLE flags (
             id    INTEGER PRIMARY KEY AUTOINCREMENT,
-            code  TEXT UNIQUE NOT NULL,          -- ten ky thuat (slug), dung lam khoa tra cuu
+            code  TEXT UNIQUE NOT NULL,  
             title TEXT NOT NULL,
             flag  TEXT NOT NULL
         );

