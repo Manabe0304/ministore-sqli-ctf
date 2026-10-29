@@ -1,9 +1,6 @@
 """
 init_db.py — Khoi tao CSDL SQLite cho "MiniStore" SQL Injection CTF
-(phien ban rut gon: 3 bai — UNION-based, Boolean Blind, Auth Bypass).
-
-Chay lai se xoa va tao moi:
-    python3 init_db.py
+(3 bai — UNION-based, Boolean-based Blind, Auth Bypass).
 """
 import os
 import sqlite3
@@ -38,12 +35,40 @@ def init():
             image       TEXT
         );
 
-        -- Flags cua tung ky thuat khai thac (muc tieu CTF)
         CREATE TABLE flags (
             id    INTEGER PRIMARY KEY AUTOINCREMENT,
-            code  TEXT UNIQUE NOT NULL,  
+            code  TEXT UNIQUE NOT NULL,
             title TEXT NOT NULL,
             flag  TEXT NOT NULL
+        );
+
+        CREATE TABLE flags_backup (
+            id    INTEGER PRIMARY KEY AUTOINCREMENT,
+            code  TEXT UNIQUE NOT NULL,
+            title TEXT NOT NULL,
+            flag  TEXT NOT NULL
+        );
+
+        CREATE TABLE vault (
+            id    INTEGER PRIMARY KEY AUTOINCREMENT,
+            label TEXT NOT NULL,
+            value TEXT NOT NULL
+        );
+
+        CREATE TABLE tokens (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            token_value TEXT NOT NULL
+        );
+
+        CREATE TABLE admin_backup (
+            id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            password TEXT NOT NULL
+        );
+
+        CREATE TABLE config (
+            key   TEXT PRIMARY KEY,
+            value TEXT NOT NULL
         );
         """
     )
@@ -52,9 +77,9 @@ def init():
         "INSERT INTO users (username, password, role, email, full_name) VALUES (?,?,?,?,?)",
         [
             ("admin",   "M1n1St0re_Adm1n_2024!", "admin",    "admin@ministore.lab",   "Store Administrator"),
-            ("alice",   "alicepass",             "customer", "alice@ministore.lab",   "Alice Nguyen"),
-            ("bob",     "bobpass123",            "customer", "bob@ministore.lab",     "Bob Tran"),
-            ("carol",   "carol!2024",            "customer", "carol@ministore.lab",   "Carol Le"),
+            ("alice",   "alicepass",           "customer", "alice@ministore.lab",   "Alice Nguyen"),
+            ("bob",     "bobpass123",          "customer", "bob@ministore.lab",     "Bob Tran"),
+            ("carol",   "carol!2024",          "customer", "carol@ministore.lab",   "Carol Le"),
         ],
     )
 
@@ -77,17 +102,50 @@ def init():
     cur.executemany(
         "INSERT INTO flags (code, title, flag) VALUES (?,?,?)",
         [
-            ("union",         "UNION-based",         "FLAG{un10n_b4s3d_d4t4_dump}"),
-            ("boolean_blind", "Boolean-based Blind",  "FLAG{b00l34n_bl1nd_1nf3r3nc3}"),
-            ("auth_bypass",   "Authentication Bypass","FLAG{4uth_byp4ss_c0mm3nt_0ut}"),
+            ("union",          "UNION-based",           "FLAG{un10n_d4t4_dump}"),
+            ("boolean_blind",  "Boolean-based Blind",    "FLAG{b00l34n_bl1nd_1nf3r3nc3}"),
+            ("auth_bypass",    "Authentication Bypass",  "FLAG{4uth_byp4ss_w1n}"),
+        ],
+    )
+
+    cur.executemany(
+        "INSERT INTO flags_backup (code, title, flag) VALUES (?,?,?)",
+        [
+            ("union",         "UNION-based (old)",          "FLAG{d3c0y_0ld_un10n_v4lu3}"),
+            ("boolean_blind", "Boolean-based Blind (old)",  "FLAG{d3c0y_0ld_b00l34n_v4lu3}"),
+            ("auth_bypass",   "Authentication Bypass (old)","FLAG{d3c0y_r0t4t3d_s3cr3t}"),
+        ],
+    )
+    cur.executemany(
+        "INSERT INTO vault (label, value) VALUES (?,?)",
+        [
+            ("promo_2023",     "FLAG{not_the_real_flag_please_keep_looking}"),
+            ("legacy_archive", "FLAG{decoy_token_ignore_this_one}"),
+        ],
+    )
+    cur.executemany(
+        "INSERT INTO tokens (token_value) VALUES (?)",
+        [("tok_9f8a21c4",), ("tok_1203ffde",), ("tok_77aa00bb",)],
+    )
+    cur.executemany(
+        "INSERT INTO admin_backup (username, password) VALUES (?,?)",
+        [("admin_old", "OldPass_2023!"), ("root_legacy", "ChangeMe_123")],
+    )
+    cur.executemany(
+        "INSERT INTO config (key, value) VALUES (?,?)",
+        [
+            ("app_version",      "2.4.1"),
+            ("maintenance_mode", "off"),
+            ("support_email",    "support@ministore.lab"),
         ],
     )
 
     con.commit()
     con.close()
     print(f"[+] Da tao CSDL: {DB_PATH}")
-    print("[+] Tai khoan admin: admin / M1n1St0re_Adm1n_2024!")
-    print("[+] 3 flag da duoc nap vao bang 'flags' (UNION-based, Boolean-based Blind, Authentication Bypass).")
+    print("[+] Tai khoan admin: admin / b00l34n_bl1nd_pwn3d (credential can dump o buoc 1 cua Boolean Blind)")
+    print("[+] Bang 'flags' chua 3 flag doc lap (union, boolean_blind, auth_bypass).")
+    print("[+] Da them 5 bang ao gay nhieu: flags_backup, vault, tokens, admin_backup, config.")
 
 
 if __name__ == "__main__":

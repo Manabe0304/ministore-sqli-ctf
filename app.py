@@ -17,17 +17,12 @@
 
  Cac doan code dung truy van bi loi deu danh dau bang comment "# [VULN]".
  Ung dung KHONG hien thi cau SQL hay noi dung loi chi tiet ra giao dien —
- nguoi choi phai tu suy luan tu hanh vi cua trang (giong trai nghiem CTF
- thuc te hon), va dieu nay cung vo hieu hoa hoan toan huong khai thac
- error-based.
+ nguoi choi phai tu suy luan tu hanh vi cua trang, dieu nay cung vo hieu
+ hoa hoan toan huong khai thac error-based.
 
- GHI CHU "GAY NHIEU" (tang do kho / chong doan mo):
-   Cac trang /, /register, /about, /contact, /cart la trang NOI DUNG THEM
-   cho phong phu, deu dung truy van THAM SO HOA (an toan). Trang chu con
-   co o tim kiem (?q=), bo loc danh muc (?category=) va sap xep (?sort=)
-   trong NHU co the khai thac duoc nhung thuc te DA duoc tham so hoa day
-   du — day la "moi nhu" de nguoi choi ren luyen ky nang phan biet diem
-   nao that su de hong, khong phai moi tham so co san deu la cua injection.
+ Cac trang /, /register, /about, /contact, /cart la trang noi dung them
+ cho phong phu, deu dung truy van THAM SO HOA (an toan) — xem README.md
+ muc "mồi nhử" neu muon biet chi tiet tung bay gay nhieu.
 ===========================================================================
 """
 import os
@@ -56,10 +51,21 @@ def get_db():
     return con
 
 
+# Bo loc kieu "WAF don gian", chi ap dung cho /login: chan cac chuoi
+# comment SQL thong dung de payload mot-cau-lenh kinh dien nhu
+# admin' --  khong con hoat dong, buoc phai dung tautology (OR).
+BLOCKED_SQL_PATTERNS = ("--", "/*", "*/", "#")
+
+
+def has_blocked_pattern(value):
+    low = (value or "").lower()
+    return any(pat in low for pat in BLOCKED_SQL_PATTERNS)
+
+
 # ---------------------------------------------------------------------------
 # Trang chu — danh sach san pham (shop front), co o tim kiem/bo loc/sap xep.
-# CA 3 THAM SO NAY DEU DA THAM SO HOA (an toan) — dong vai tro "moi nhu"
-# ben canh diem de hong that su (/products?id=).
+# Ca 3 tham so nay DA tham so hoa (an toan) — chi la "moi nhu" ben canh
+# diem de hong that su (/products?id=).
 # ---------------------------------------------------------------------------
 @app.route("/")
 def index():
@@ -104,9 +110,8 @@ def index():
 
 # ---------------------------------------------------------------------------
 # UNION-BASED
-#     /products?id=1  -> trang chi tiet san pham
-#     Loi/ngoai le KHONG duoc hien thi ra giao dien (chi mot thong bao
-#     chung chung) -> chi con duong khai thac thuc te la UNION-based.
+#     /products?id=1  -> trang chi tiet san pham. Loi/ngoai le KHONG duoc
+#     hien thi ra giao dien -> chi con duong khai thac thuc te la UNION.
 # ---------------------------------------------------------------------------
 @app.route("/products")
 def products():
@@ -125,7 +130,6 @@ def products():
             cur.execute(query)
             rows = cur.fetchall()
         except Exception:
-            # Khong lo chi tiet loi ra giao dien (chan error-based)
             rows = []
         finally:
             con.close()
@@ -138,7 +142,8 @@ def products():
 # ---------------------------------------------------------------------------
 # BOOLEAN-BASED BLIND
 #     /check?username=  -> cong cu kiem tra tai khoan thanh vien.
-#     Chi tra ve 1 trong 2 trang thai: EXISTS / NOT FOUND.
+#     Chi tra ve 1 trong 2 trang thai: TAKEN / AVAILABLE. Oracle nay dung
+#     chung cho ca 2 buoc cua bai (dump mat khau admin ROI dump flag).
 # ---------------------------------------------------------------------------
 @app.route("/check")
 def check():
@@ -166,7 +171,9 @@ def check():
 
 # ---------------------------------------------------------------------------
 # AUTHENTICATION BYPASS
-#     /login -> dang nhap tai khoan khach hang / quan tri
+#     /login -> dang nhap tai khoan khach hang / quan tri. Route nay chan
+#     cac ky tu comment SQL (xem has_blocked_pattern o tren) -> bypass
+#     kieu "admin' -- " khong con hoat dong, buoc dung tautology OR.
 # ---------------------------------------------------------------------------
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -174,6 +181,11 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "")
         password = request.form.get("password", "")
+
+        if has_blocked_pattern(username) or has_blocked_pattern(password):
+            message = "Yeu cau chua ky tu khong duoc phep."
+            return render_template("login.html", message=message)
+
         con = get_db()
         cur = con.cursor()
         try:
@@ -219,10 +231,7 @@ def logout():
 
 
 # ---------------------------------------------------------------------------
-# DANG KY TAI KHOAN — trang noi dung them cho phong phu.
-# An toan hoan toan: dung tham so hoa (?), khong tao them lo hong nao.
-# (Khac voi ban day du truoc day: trang nay KHONG con dung de minh hoa
-# second-order SQLi, chi con la tinh nang dang ky thong thuong.)
+# DANG KY TAI KHOAN — trang noi dung them, hoan toan an toan (tham so hoa).
 # ---------------------------------------------------------------------------
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -257,8 +266,8 @@ def register():
 
 
 # ---------------------------------------------------------------------------
-# GIOI THIEU / LIEN HE / GIO HANG — trang tinh, khong truy van du lieu nhay
-# cam, chi de giao dien phong phu nhu mot shop that.
+# GIOI THIEU / LIEN HE / GIO HANG — trang tinh, khong truy van du lieu
+# nhay cam, chi de giao dien phong phu nhu mot shop that.
 # ---------------------------------------------------------------------------
 @app.route("/about")
 def about():
@@ -269,14 +278,12 @@ def about():
 def contact():
     sent = False
     if request.method == "POST":
-        # Khong ghi vao CSDL — chi phan hoi UI, giam dien tich tan cong.
         sent = True
     return render_template("contact.html", sent=sent)
 
 
 @app.route("/cart")
 def cart():
-    # Gio hang demo — du lieu tinh, khong lien quan CSDL/session that.
     return render_template("cart.html")
 
 
